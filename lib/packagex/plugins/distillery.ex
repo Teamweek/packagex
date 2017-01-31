@@ -38,7 +38,7 @@ defmodule Packagex.Plugins.Distillery do
     File.mkdir deb_output_dir
 
     {_output, 0} = System.cmd("fpm", fpm_arguments(release, config), cd: deb_output_dir)
-    Logger.success("==> Debian package for this release has been successfuly built.")
+    Logger.success("Debian package for this release has been successfuly built.")
   end
 
   def fpm_arguments(release, config) do
