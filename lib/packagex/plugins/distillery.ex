@@ -1,13 +1,17 @@
 defmodule Packagex.Plugins.Distillery do
   use Mix.Releases.Plugin
   alias Packagex.Debian
+  alias Mix.Releases.Logger
 
   ## Plugin hooks
 
   def before_assembly(release, _opts), do: release
 
   def after_assembly(release, _opts) do
-    build_deb_with_fpm(release, config(release))
+    case System.get_env("BUILD_DEB") do
+      "true" -> build_deb_with_fpm(release, config(release))
+      _ -> Logger.notice("==> Skipping building Debian package for this release, pass BUILD_DEB=true to build it.")
+    end
 
     release
   end
@@ -34,6 +38,7 @@ defmodule Packagex.Plugins.Distillery do
     File.mkdir deb_output_dir
 
     {_output, 0} = System.cmd("fpm", fpm_arguments(release, config), cd: deb_output_dir)
+    Logger.success("==> Debian package for this release has been successfuly built.")
   end
 
   def fpm_arguments(release, config) do
