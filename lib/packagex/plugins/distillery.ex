@@ -9,7 +9,7 @@ defmodule Packagex.Plugins.Distillery do
   def after_assembly(release, _opts) do
     build_deb_with_fpm(release, config(release))
 
-    :fail
+    release
   end
 
   def before_package(release, _opts), do: release
@@ -30,22 +30,21 @@ defmodule Packagex.Plugins.Distillery do
   end
 
   def build_deb_with_fpm(release, config) do
-    {_output, 0} = System.cmd("fpm", fpm_arguments(release, config))
+    deb_output_dir = Path.join [System.cwd, "_build/prod/deb"]
+    File.mkdir deb_output_dir
+
+    {_output, 0} = System.cmd("fpm", fpm_arguments(release, config), cd: deb_output_dir)
   end
 
   def fpm_arguments(release, config) do
-    deb_output_dir = Path.join [System.cwd, "_build/prod/deb"]
-
     ~w(-s dir -t deb) ++
     ["--name", config.name] ++
     ["--prefix", "/opt/#{config.name}"] ++
     ["--version", config.version] ++
-    ["--iteration", iteration(config)] ++
+    ["--iteration", "#{iteration(config)}"] ++
     ["--description", full_description(config.description)] ++
-    ["--package", deb_output_dir] ++
-    [Path.expand release.output_dir]
+    ["#{Path.expand release.output_dir}/=/"]
   end
-
 
   def iteration(config) do
     case System.get_env "DEBIAN_REVISION" do

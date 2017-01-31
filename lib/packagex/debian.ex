@@ -5,7 +5,7 @@ defmodule Packagex.Debian do
   end
 
   def package_version(name) do
-    case System.cmd("apt-cache", ~w(show #{name} 2>/dev/null)) do
+    case System.cmd("apt-cache", ~w(show #{name})) do
       {result, 0} -> {:ok, parse_version(result)}
       _ -> {:error, "No packages found"}
     end
