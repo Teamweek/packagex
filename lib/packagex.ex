@@ -3,16 +3,21 @@ defmodule Packagex do
   Documentation for Packagex.
   """
 
-  @doc """
-  Hello world.
+  def git_info do
+    "Built from: #{git_id()}"
+  end
 
-  ## Examples
+  def git_id do
+    "#{git_branch()} #{git_commit()}"
+  end
 
-      iex> Packagex.hello
-      :world
+  def git_branch do
+    {result, 0} = System.cmd("git", ~w(symbolic-ref HEAD --short))
+    String.strip(result)
+  end
 
-  """
-  def hello do
-    :world
+  def git_commit do
+    {result, 0} = System.cmd("git", ~w(rev-parse HEAD))
+    String.strip(result)
   end
 end
