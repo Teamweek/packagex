@@ -7,9 +7,9 @@ defmodule Packagex.Plugins.Distillery do
 
   def before_assembly(release, _opts), do: release
 
-  def after_assembly(release, _opts) do
+  def after_assembly(release, opts) do
     case System.get_env("BUILD_DEB") do
-      "true" -> build_deb_with_fpm(release, config(release))
+      "true" -> build_deb_with_fpm(release, config(release, opts))
       _ -> Logger.notice("==> Skipping building Debian package for this release, pass BUILD_DEB=true to build it.")
     end
 
@@ -22,9 +22,9 @@ defmodule Packagex.Plugins.Distillery do
 
   ##
 
-  def config(release) do
+  def config(release, opts) do
     default_config(release)
-    |> Map.merge(Mix.Project.config[:package])
+    |> Map.merge(opts)
   end
 
   def default_config(release) do
@@ -37,19 +37,23 @@ defmodule Packagex.Plugins.Distillery do
     deb_output_dir = Path.join [System.cwd, "_build/prod/deb"]
     File.mkdir deb_output_dir
 
-    {_output, 0} = System.cmd("fpm", fpm_arguments(release, config), cd: deb_output_dir)
+    {_output, 0} = System.cmd("fpm", fpm_args(release, config), cd: deb_output_dir)
     Logger.success("Debian package for this release has been successfuly built.")
   end
 
-  def fpm_arguments(release, config) do
+  def fpm_args(release, config) do
     ~w(-s dir -t deb) ++
     ["--name", config.name] ++
     ["--prefix", "/opt/#{config.name}"] ++
     ["--version", config.version] ++
     ["--iteration", "#{iteration(config)}"] ++
     ["--description", full_description(config.description)] ++
+    upstart_script_arg(config) ++
     ["#{Path.expand release.output_dir}/=/"]
   end
+
+  def upstart_script_arg(%{upstart_script: upstart_script_path}), do: ["--deb-upstart", upstart_script_path]
+  def upstart_script_arg(_), do: []
 
   def iteration(config) do
     case System.get_env "DEBIAN_REVISION" do
