@@ -30,6 +30,8 @@ defmodule Packagex.Plugins.Distillery do
   def default_config(release) do
     %{name: release.name,
       version: release.version,
+      user: "root",
+      group: "root",
       description: "Configure description in mix.exs."}
   end
 
@@ -46,6 +48,8 @@ defmodule Packagex.Plugins.Distillery do
     ["--name", config.name] ++
     ["--prefix", "/opt/#{config.name}"] ++
     ["--version", config.version] ++
+    ["--deb-user", config.user] ++
+    ["--deb-group", config.group] ++
     ["--iteration", "#{iteration(config)}"] ++
     ["--description", full_description(config.description)] ++
     upstart_script_arg(config) ++
