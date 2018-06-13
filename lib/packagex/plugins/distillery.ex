@@ -39,8 +39,12 @@ defmodule Packagex.Plugins.Distillery do
     deb_output_dir = Path.join [System.cwd, "_build/prod/deb"]
     File.mkdir deb_output_dir
 
-    {_output, 0} = System.cmd("fpm", fpm_args(release, config), cd: deb_output_dir)
-    Logger.success("Debian package for this release has been successfuly built.")
+    try do
+      {_output, 0} = System.cmd("fpm", fpm_args(release, config), cd: deb_output_dir)
+      Logger.success("Debian package for this release has been successfully built.")
+    catch
+      _, :enoent -> raise %RuntimeError{message: "fpm not found! Please install it."}
+    end
   end
 
   def fpm_args(release, config) do
