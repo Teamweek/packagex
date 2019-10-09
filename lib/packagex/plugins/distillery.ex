@@ -70,16 +70,17 @@ defmodule Packagex.Plugins.Distillery do
   def iteration(config) do
     case System.get_env "DEBIAN_REVISION" do
       nil ->
+        revision_suffix = System.get_env("DEBIAN_REVISION_SUFFIX")
         Debian.update_cache()
         case Debian.package_version(config.name) do
           {:ok, version} ->
-            {:ok, revision} = Debian.next_debian_revision(version, config.version)
+            {:ok, revision} = Debian.next_debian_revision(version, config.version, revision_suffix)
             revision
           {:error, _no_packages_found} ->
-            1
+            Debian.first_debian_revision(revision_suffix)
         end
       revision ->
-        String.to_integer(revision)
+        revision
     end
   end
 
