@@ -1,7 +1,7 @@
 defmodule Packagex.Plugins.Distillery do
-  use Mix.Releases.Plugin
+  use Distillery.Releases.Plugin
   alias Packagex.Debian
-  alias Mix.Releases.Logger
+  alias Distillery.Releases.Shell
 
   ## Plugin hooks
 
@@ -10,7 +10,7 @@ defmodule Packagex.Plugins.Distillery do
   def after_assembly(release, opts) do
     case System.get_env("BUILD_DEB") do
       "true" -> build_deb_with_fpm(release, config(release, opts))
-      _ -> Logger.notice("==> Skipping building Debian package for this release, pass BUILD_DEB=true to build it.")
+      _ -> Shell.info("==> Skipping building Debian package for this release, pass BUILD_DEB=true to build it.")
     end
 
     release
@@ -41,7 +41,7 @@ defmodule Packagex.Plugins.Distillery do
 
     try do
       {_output, 0} = System.cmd("fpm", fpm_args(release, config), cd: deb_output_dir)
-      Logger.success("Debian package for this release has been successfully built.")
+      Shell.info("Debian package for this release has been successfully built.")
     catch
       _, :enoent -> raise %RuntimeError{message: "fpm not found! Please install it."}
     end
