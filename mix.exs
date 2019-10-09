@@ -28,6 +28,6 @@ defmodule Packagex.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:distillery, "~> 2.0"}]
+    [{:distillery, "~> 2.1"}]
   end
 end
