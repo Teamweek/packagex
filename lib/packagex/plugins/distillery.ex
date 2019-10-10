@@ -58,7 +58,7 @@ defmodule Packagex.Plugins.Distillery do
     ["--description", full_description(config.description)] ++
     upstart_script_arg(config) ++
     before_install_arg(config) ++
-    ["#{Path.expand release.output_dir}/=/"]
+    ["#{Path.expand release.profile.output_dir}/=/"]
   end
 
   def before_install_arg(%{before_install_script: before_install_script_path}), do: ["--before-install", before_install_script_path]
