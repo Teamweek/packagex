@@ -36,7 +36,8 @@ defmodule Packagex.Plugins.Distillery do
   end
 
   def build_deb_with_fpm(release, config) do
-    deb_output_dir = Path.join [File.cwd, "_build/prod/deb"]
+    {:ok, cwd} = File.cwd()
+    deb_output_dir = Path.join [cwd, "_build/prod/deb"]
     File.mkdir deb_output_dir
 
     try do
