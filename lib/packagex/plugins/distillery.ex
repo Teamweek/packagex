@@ -57,7 +57,6 @@ defmodule Packagex.Plugins.Distillery do
     ["--deb-group", config.group] ++
     ["--iteration", "#{iteration(config)}"] ++
     ["--description", full_description(config.description)] ++
-    ["--deb-use-file-permissions"] ++
     upstart_script_arg(config) ++
     before_install_arg(config) ++
     after_install_arg(config) ++
