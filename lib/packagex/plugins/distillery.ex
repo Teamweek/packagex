@@ -36,7 +36,7 @@ defmodule Packagex.Plugins.Distillery do
   end
 
   def build_deb_with_fpm(release, config) do
-    deb_output_dir = Path.join [System.cwd, "_build/prod/deb"]
+    deb_output_dir = Path.join [File.cwd, "_build/prod/deb"]
     File.mkdir deb_output_dir
 
     try do
@@ -56,6 +56,7 @@ defmodule Packagex.Plugins.Distillery do
     ["--deb-group", config.group] ++
     ["--iteration", "#{iteration(config)}"] ++
     ["--description", full_description(config.description)] ++
+    ["--deb-use-file-permissions"] ++
     upstart_script_arg(config) ++
     before_install_arg(config) ++
     ["#{Path.expand release.profile.output_dir}/=/"]

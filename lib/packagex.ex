@@ -13,11 +13,11 @@ defmodule Packagex do
 
   def git_branch do
     {result, 0} = System.cmd("git", ~w(symbolic-ref HEAD --short))
-    String.strip(result)
+    String.trim(result)
   end
 
   def git_commit do
     {result, 0} = System.cmd("git", ~w(rev-parse HEAD))
-    String.strip(result)
+    String.trim(result)
   end
 end
